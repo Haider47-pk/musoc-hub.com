@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Tutor Pro - PC/Laptop Version</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* General styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #4e9fff, #7c7cfa);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-attachment: fixed;
+            background-size: cover;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 85%;
+            margin: 50px auto;
+            padding: 30px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.95); /* Semi-transparent white */
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+        }
+
+        h1, h2 {
+            color: #333;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .input-box, .dropdown, .start-btn, .restart-btn, .clear-btn, .dark-mode-btn {
+            padding: 12px;
+            margin: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 80%;
+            max-width: 500px;
+            font-size: 16px;
+            background-color: #fff;
+        }
+
+        .start-btn, .restart-btn, .clear-btn {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .start-btn:hover, .restart-btn:hover, .clear-btn:hover {
+            background-color: #45a049;
+        }
+
+        .dark-mode-btn {
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark-mode-btn:hover {
+            background-color: #555;
+        }
+
+        .dropdown {
+            background-color: #f9f9f9;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .typing-input {
+            height: 150px;
+            width: 80%;
+            max-width: 500px;
+            resize: none;
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .typing-text {
+            font-size: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+            margin: 15px;
+            border-radius: 8px;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .timer-text, .result-text, .mistakes-text {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .highlight {
+            color: red;
+        }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .container.dark-mode {
+            background-color: #444;
+        }
+
+        .input-box.dark-mode, .dropdown.dark-mode, .typing-input.dark-mode, .start-btn.dark-mode,
+        .restart-btn.dark-mode, .clear-btn.dark-mode, .dark-mode-btn.dark-mode {
+            background-color: #555;
+            color: #fff;
+            border: 1px solid #777;
+        }
+
+        .dark-mode .highlight {
+            color: yellow;
+        }
+
+        /* Chart styles */
+        canvas {
+            margin-top: 20px;
+        }
+
+        /* Background animation */
+        @keyframes backgroundMove {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 100% 100%;
+            }
+        }
+
+        .animated-background {
+            animation: backgroundMove 5s linear infinite;
+        }
+
+        /* Responsive layout */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+            }
+            .input-box, .dropdown, .start-btn, .restart-btn, .clear-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container animated-background">
+        <h1>Typing Tutor Pro</h1>
+        <button onclick="toggleDarkMode()" class="dark-mode-btn">🌙 Toggle Dark Mode</button>
+
+        <h2>Enter Your Name</h2>
+        <input type="text" id="username" placeholder="Enter your name" class="input-box">
+        <button onclick="saveUserName()" class="start-btn">Submit</button>
+
+        <h2>Select a Paragraph</h2>
+        <select id="paragraphs" onchange="displayParagraph()" class="dropdown">
+            <option value="">--Select a Paragraph--</option>
+            <option value="Live for Pakistan">Live for Pakistan</option>
+            <option value="The Beauty of Pakistan">The Beauty of Pakistan</option>
+            <option value="The Future of Technology">The Future of Technology</option>
+            <option value="Education is the Key">Education is the Key</option>
+            <option value="Nature's Wonders">Nature's Wonders</option>
+            <option value="The Importance of Health">The Importance of Health</option>
+            <option value="The Power of Positivity">The Power of Positivity</option>
+            <option value="Leadership and Growth">Leadership and Growth</option>
+            <option value="A World of Opportunities">A World of Opportunities</option>
+            <option value="Creativity in the Modern World">Creativity in the Modern World</option>
+            <option value="The Rise of Artificial Intelligence">The Rise of Artificial Intelligence</option>
+            <option value="Our Responsibility Towards Earth">Our Responsibility Towards Earth</option>
+            <option value="Global Peace and Cooperation">Global Peace and Cooperation</option>
+            <option value="The Role of Art in Society">The Role of Art in Society</option>
+            <option value="Human Rights and Justice">Human Rights and Justice</option>
+            <option value="The Power of Innovation">The Power of Innovation</option>
+            <option value="Education for a Better Future">Education for a Better Future</option>
+            <option value="The Beauty of Diversity">The Beauty of Diversity</option>
+            <option value="The Impact of Social Media">The Impact of Social Media</option>
+            <option value="Exploring New Frontiers">Exploring New Frontiers</option>
+            <option value="The Importance of Teamwork">The Importance of Teamwork</option>
+            <option value="Science and Sustainability">Science and Sustainability</option>
+        </select>
+
+        <h2>Set Time Limit (in seconds)</h2>
+        <input type="number" id="time-limit" placeholder="Enter time in seconds" class="input-box">
+
+        <h2>Typing Test</h2>
+        <div id="text-to-type" class="typing-text"></div>
+        <textarea id="typing-area" placeholder="Start typing here..." class="typing-input" disabled></textarea>
+        <button onclick="restartTest()" class="restart-btn">Restart Test</button>
+        <button onclick="clearResults()" class="clear-btn">Clear Results</button>
+        <p id="timer" class="timer-text"></p>
+        <p id="result" class="result-text"></p>
+        <div id="mistakes" class="mistakes-text"></div>
+        <h2>Test Statistics</h2>
+        <canvas id="testChart"></canvas>
+    </div>
+
+    <script>
+        let startTime, timerStarted = false;
+        const paragraphs = {
+            "The Beauty of Pakistan": "Living for Pakistan means embracing the spirit of patriotism, sacrifice, and unity. It is about contributing to the growth and prosperity of our beloved nation through dedication and hard work. Pakistan, with its rich cultural heritage and diverse landscapes, stands as a symbol of resilience and hope. Every individual has a role to play in ensuring that the country continues to thrive in peace, progress, and harmony. Whether through education, innovation, or social responsibility, living for Pakistan involves working towards building a stronger, more inclusive society. It means putting the nation’s interests first, upholding its values, and supporting its future generations. Let us live for Pakistan, with love, pride, and a commitment to its brighter tomorrow.",
+            "Live for Pakistan": "Pakistan is more than just a country; it is our identity, a symbol of resilience, pride, and unity. From its rich cultural heritage to its diverse landscapes, Pakistan stands as a testament to the strength of its people and the sacrifices made for its creation. With a history rooted in the pursuit of freedom and justice, Pakistan represents a land of hope and possibilities. It is a place where traditions are cherished, languages and cultures thrive, and the spirit of patriotism binds every citizen together. Pakistan is not just a homeland; it is the heart and soul of its people, shaping their identity, values, and future.",
+            "The Future of Technology": "Technology is rapidly changing the way we live and work, reshaping every aspect of our daily lives. From the way we communicate to how we do business, technology has introduced new tools that enhance efficiency, connectivity, and convenience. In the workplace, automation, artificial intelligence, and cloud computing have transformed industries, allowing for more streamlined processes, remote collaboration, and data-driven decision-making. In our personal lives, smartphones, social media, and online services have revolutionized how we shop, learn, and interact with others. As technology continues to evolve, it brings both exciting opportunities and challenges, urging us to adapt, innovate, and ensure its responsible use for the betterment of society.",
+            "Education is the Key": "Education is the most powerful tool that can change the world. It opens doors to new opportunities, fosters critical thinking, and empowers individuals to reach their full potential. From improving living standards to shaping the future of nations, education plays a crucial role in personal and societal development. A well-rounded education helps individuals adapt to the evolving world and prepares them to tackle the challenges of the future. It is the foundation for economic growth, social justice, and sustainable progress.",
+            "Nature's Wonders": "Nature is the most remarkable and beautiful thing we have. From the mountains to the oceans, from the vast forests to the tiny details of a flower, nature's wonders never cease to amaze us. The diversity of life on Earth is truly a gift, and it is our responsibility to protect it. By understanding and respecting nature, we can ensure a harmonious existence that preserves the environment for future generations. Let’s take a moment to appreciate the beauty around us and work towards preserving it.",
+            "The Importance of Health": "Good health is the cornerstone of a happy and fulfilling life. It affects every aspect of our well-being, from our ability to work and engage with others to our overall sense of happiness and peace. Maintaining physical, mental, and emotional health is essential to living a productive life. By focusing on a balanced diet, exercise, and mental health care, we can ensure a high quality of life. Health is a precious resource, and we must take care of it to ensure a better future for ourselves and those around us.",
+            "The Power of Positivity": "Positivity is a powerful force that can transform lives. When we maintain a positive outlook, we approach challenges with resilience and determination. Positivity helps us to see opportunities in the face of adversity, foster good relationships, and improve our mental well-being. By focusing on the good in life and remaining hopeful, we attract success and happiness. The power of positivity lies in its ability to change our perspective, turning obstacles into stepping stones for growth.",
+            "Leadership and Growth": "Leadership is about inspiring others to achieve greatness and contribute to a shared vision. Effective leaders motivate their teams, provide guidance, and create an environment that encourages growth and innovation. Leadership is not just about authority, but about fostering collaboration, empathy, and integrity. As we grow as individuals and as a community, leadership plays a pivotal role in shaping the future and driving progress. By developing leadership skills, we empower others to unlock their potential and achieve success together.",
+            "A World of Opportunities": "The world is full of opportunities for those who are willing to explore and take risks. From the advancements in technology to the growing global economy, the possibilities for success are endless. However, to seize these opportunities, we must be open-minded, adaptable, and willing to learn. Each opportunity is a stepping stone towards personal and professional growth. By embracing change and taking initiative, we can create a brighter future for ourselves and for the world around us."
+        };
+        
+        let timer;
+
+        function saveUserName() {
+            let username = document.getElementById("username").value;
+            if (username.trim() !== "") {
+                alert("Welcome, " + username + "! Select a paragraph to begin typing.");
+            } else {
+                alert("Please enter your name.");
+            }
+        }
+
+        function displayParagraph() {
+            let selectedPara = document.getElementById("paragraphs").value;
+            document.getElementById("text-to-type").innerText = paragraphs[selectedPara] || "";
+            // Disable the typing area until the user starts typing
+            document.getElementById("typing-area").disabled = false;
+        }
+
+        document.getElementById("typing-area").addEventListener("input", function() {
+            if (!timerStarted && document.getElementById("paragraphs").value !== "") {
+                startTest();
+                timerStarted = true;
+            }
+        });
+
+        function startTest() {
+            let timeLimit = document.getElementById("time-limit").value;
+            if (!timeLimit || timeLimit <= 0) {
+                alert("Please enter a valid time limit.");
+                return;
+            }
+            let timeRemaining = timeLimit;
+            timer = setInterval(() => {
+                timeRemaining--;
+                document.getElementById("timer").innerText = `Time Left: ${timeRemaining} seconds`;
+                if (timeRemaining <= 0) {
+                    clearInterval(timer);
+                    endTest();
+                }
+            }, 1000);
+        }
+
+        function endTest() {
+            document.getElementById("typing-area").disabled = true;
+            let textToType = document.getElementById("text-to-type").innerText;
+            let typedText = document.getElementById("typing-area").value;
+            let highlightedText = "";
+
+            for (let i = 0; i < textToType.length; i++) {
+                if (typedText[i] === textToType[i]) {
+                    highlightedText += textToType[i];
+                } else {
+                    highlightedText += `<span class='highlight'>${textToType[i] || "_"}</span>`;
+                }
+            }
+            document.getElementById("mistakes").innerHTML = `Mistakes: ${highlightedText}`;
+            calculateResults();
+        }
+
+        function calculateResults() {
+            let textToType = document.getElementById("text-to-type").innerText;
+            let typedText = document.getElementById("typing-area").value;
+            let correctWords = 0;
+            let totalWords = textToType.split(' ').length;
+            let mistakes = 0;
+
+            for (let i = 0; i < Math.min(textToType.length, typedText.length); i++) {
+                if (textToType[i] === typedText[i]) {
+                    correctWords++;
+                } else {
+                    mistakes++;
+                }
+            }
+
+            let accuracy = ((correctWords / totalWords) * 100).toFixed(2);
+            document.getElementById("result").innerHTML = `Accuracy: ${accuracy}%`;
+        }
+
+        function restartTest() {
+            location.reload();
+        }
+
+        function clearResults() {
+            document.getElementById("typing-area").value = '';
+            document.getElementById("result").innerText = '';
+            document.getElementById("mistakes").innerText = '';
+            document.getElementById("timer").innerText = '';
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            document.querySelector(".container").classList.toggle('dark-mode');
+            document.querySelector(".input-box").classList.toggle('dark-mode');
+            document.querySelector(".dropdown").classList.toggle('dark-mode');
+            document.querySelector(".typing-input").classList.toggle('dark-mode');
+            document.querySelector(".start-btn").classList.toggle('dark-mode');
+            document.querySelector(".restart-btn").classList.toggle('dark-mode');
+            document.querySelector(".dark-mode-btn").classList.toggle('dark-mode');
+        }
+    </script>
+</body>
+</html>
